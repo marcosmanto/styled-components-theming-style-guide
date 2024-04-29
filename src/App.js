@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import GlobalStyle from './styles/global';
@@ -21,6 +21,14 @@ function App() {
     setTheme((prevState) => (prevState === 'dark' ? 'light' : 'dark'));
   }
 
+  useEffect(() => {
+    setTheme(JSON.parse(localStorage.getItem('theme')));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('theme', JSON.stringify(theme));
+  }, [theme]);
+
   return (
     <ThemeProvider
       theme={{
@@ -30,7 +38,18 @@ function App() {
       }}
     >
       <GlobalStyle />
-      <Layout />
+      <button
+        style={{
+          marginBottom: '1ch',
+          borderRadius: '1ch',
+          padding: '.5ch 1ch',
+          cursor: 'pointer',
+        }}
+        onClick={handleToggleTheme}
+      >
+        Toggle
+      </button>
+      {theme === 'dark' && <Layout />}
     </ThemeProvider>
   );
 }
