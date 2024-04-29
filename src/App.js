@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import GlobalStyle from './styles/global';
@@ -7,6 +7,8 @@ import Layout from './components/Layout';
 import themes from './styles/themes';
 
 function App() {
+  // useRef doesn't trigger new render, just keep the values trough life of component
+  const firstRender = useRef(true);
   const [theme, setTheme] = useState('dark');
 
   const currentTheme = useMemo(() => {
@@ -29,6 +31,16 @@ function App() {
     localStorage.setItem('theme', JSON.stringify(theme));
   }, [theme]);
 
+  // this useEffect not run at the mount (firt render), but, after that, it runs normally
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+
+    console.log({ theme });
+  }, [theme]);
+
   return (
     <ThemeProvider
       theme={{
@@ -38,18 +50,7 @@ function App() {
       }}
     >
       <GlobalStyle />
-      <button
-        style={{
-          marginBottom: '1ch',
-          borderRadius: '1ch',
-          padding: '.5ch 1ch',
-          cursor: 'pointer',
-        }}
-        onClick={handleToggleTheme}
-      >
-        Toggle
-      </button>
-      {theme === 'dark' && <Layout />}
+      <Layout />
     </ThemeProvider>
   );
 }
