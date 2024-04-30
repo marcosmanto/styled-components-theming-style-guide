@@ -7,19 +7,34 @@ import Layout from './components/Layout';
 import themes from './styles/themes';
 
 export default class App extends React.Component {
-  state = { theme: 'dark' };
+  constructor(props) {
+    super(props);
+
+    let theme = 'dark';
+    try {
+      theme = JSON.parse(localStorage.getItem('theme'));
+    } catch (err) {
+      console.error(err);
+    }
+
+    this.state = {
+      theme,
+    };
+  }
 
   handleToggleTheme = () => {
-    this.setState(({ theme }) => ({
-      theme: theme === 'dark' ? 'light' : 'dark',
-    }));
+    this.setState(
+      ({ theme }) => ({
+        theme: theme === 'dark' ? 'light' : 'dark',
+      }),
+      () => localStorage.setItem('theme', JSON.stringify(this.state.theme))
+    );
   };
 
   // just run once when component is built into the app
   // same as useEffect(() = {}, []) in a functional component
   componentDidMount() {
     console.log('componentDidMount exec');
-    this.setState({ theme: JSON.parse(localStorage.getItem('theme')) });
   }
 
   // called before a component is destroyed
@@ -45,7 +60,6 @@ export default class App extends React.Component {
       prevState,
       prevProps,
     });
-    localStorage.setItem('theme', JSON.stringify(this.state.theme));
   }
 
   // monitors for errors that occur within the component structure and its children
