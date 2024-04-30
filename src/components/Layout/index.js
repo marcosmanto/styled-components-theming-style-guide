@@ -1,31 +1,32 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import Header from '../Header';
 import PostsList from '../PostsList';
 import Footer from '../Footer';
 
-export default function Layout() {
-  useEffect(() => {
-    function handleScroll() {
-      console.log('scroll event');
-    }
-    document.addEventListener('scroll', handleScroll);
+export default class Layout extends React.Component {
+  handleScroll() {
+    console.log('scroll event');
+  }
 
-    // unmount function is passed trough this return
-    return () => {
-      // when component is removed from DOM exclude all listeners
-      // without this evt listeners keep active
-      // and consuming resources even with component destroyed
-      document.removeEventListener('scroll', handleScroll);
-      console.log('<Layout /> unmont');
-    };
-  }, []);
+  // add event listeners at component creation
+  componentDidMount() {
+    document.addEventListener('scroll', this.handleScroll);
+  }
 
-  return (
-    <>
-      <Header />
-      <PostsList />
-      <Footer />
-    </>
-  );
+  // remove event listeners before component is destroyed
+  componentWillUnmount() {
+    document.removeEventListener('scroll', this.handleScroll);
+    console.log('<Layout /> unmont');
+  }
+
+  render() {
+    return (
+      <>
+        <Header />
+        <PostsList />
+        <Footer />
+      </>
+    );
+  }
 }

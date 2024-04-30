@@ -15,6 +15,44 @@ export default class App extends React.Component {
     }));
   };
 
+  // just run once when component is built into the app
+  // same as useEffect(() = {}, []) in a functional component
+  componentDidMount() {
+    console.log('componentDidMount exec');
+    this.setState({ theme: JSON.parse(localStorage.getItem('theme')) });
+  }
+
+  // called before a component is destroyed
+  componentWillUnmount() {}
+
+  // before render, get the next values to change in the state and triggered whenever there is a change in state or props
+  // this function must return true or false. True allow the update/render and false block the update
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('shouldComponentUpdate', {
+      currentTheme: this.state,
+      nextState,
+      nextProps,
+    });
+
+    return true;
+  }
+
+  // after render and triggered whenever there is a change in state or props
+  // same as useEffect(() = {}, [state]) in a functional component
+  componentDidUpdate(prevProps, prevState) {
+    console.log('componentDidUpdate', {
+      currentTheme: this.state,
+      prevState,
+      prevProps,
+    });
+    localStorage.setItem('theme', JSON.stringify(this.state.theme));
+  }
+
+  // monitors for errors that occur within the component structure and its children
+  componentDidCatch(error, info) {
+    console.log('componentDidCatch', { error, info });
+  }
+
   render() {
     const { theme } = this.state;
 
@@ -32,55 +70,3 @@ export default class App extends React.Component {
     );
   }
 }
-
-/*function App() {
-  // useRef doesn't trigger new render, just keep the values trough life of component
-  const firstRender = useRef(true);
-  const [theme, setTheme] = useState('dark');
-
-  const currentTheme = useMemo(() => {
-    return themes[theme] || themes.dark;
-  }, [theme]);
-
-  const currentThemeValue = useMemo(() => {
-    return theme;
-  }, [theme]);
-
-  function handleToggleTheme() {
-    setTheme((prevState) => (prevState === 'dark' ? 'light' : 'dark'));
-  }
-
-  useEffect(() => {
-    setTheme(JSON.parse(localStorage.getItem('theme')));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('theme', JSON.stringify(theme));
-  }, [theme]);
-
-  // this useEffect not run at the mount (firt render), but, after that, it runs normally
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
-
-    console.log({ theme });
-  }, [theme]);
-
-  return (
-    <ThemeProvider
-      theme={{
-        currentTheme,
-        currentThemeValue,
-        onToggleTheme: handleToggleTheme,
-      }}
-    >
-      <GlobalStyle />
-      <Layout />
-    </ThemeProvider>
-  );
-}
-
-export default App;
-*/
