@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import GlobalStyle from './styles/global';
@@ -6,7 +6,34 @@ import Layout from './components/Layout';
 
 import themes from './styles/themes';
 
-function App() {
+export default class App extends React.Component {
+  state = { theme: 'dark' };
+
+  handleToggleTheme = () => {
+    this.setState(({ theme }) => ({
+      theme: theme === 'dark' ? 'light' : 'dark',
+    }));
+  };
+
+  render() {
+    const { theme } = this.state;
+
+    return (
+      <ThemeProvider
+        theme={{
+          currentTheme: themes[theme] || themes.dark,
+          currentThemeValue: theme,
+          onToggleTheme: this.handleToggleTheme,
+        }}
+      >
+        <GlobalStyle />
+        <Layout />
+      </ThemeProvider>
+    );
+  }
+}
+
+/*function App() {
   // useRef doesn't trigger new render, just keep the values trough life of component
   const firstRender = useRef(true);
   const [theme, setTheme] = useState('dark');
@@ -56,3 +83,4 @@ function App() {
 }
 
 export default App;
+*/
